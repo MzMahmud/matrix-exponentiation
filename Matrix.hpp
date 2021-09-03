@@ -45,13 +45,46 @@ template <class T> class Matrix {
             delete[] a;
     }
 
-    Matrix &operator=(const Matrix &other) {}
-    Matrix &operator+=(const Matrix &other) {}
-    Matrix &operator-=(const Matrix &other) {}
-    Matrix &operator*=(const Matrix &other) {}
+    Matrix &operator=(const Matrix &other) {
+        if (this != &other) {
+            clear();
+            n_row    = other.n_row;
+            n_col    = other.n_col;
+            int size = n_row * n_col;
+            for (int i = 0; i < size; ++i)
+                a[i] = other.a[i];
+        }
+        return *this;
+    }
 
-    Matrix operator+(const Matrix &other) {}
-    Matrix operator-(const Matrix &other) {}
+    Matrix &operator+=(const Matrix &other) {
+        if (!this->has_same_dimention(other))
+            throw "can not add mismatching dimention matrix";
+        int size = n_row * n_col;
+        for (int i = 0; i < size; ++i)
+            a[i] += other.a[i];
+        return *this;
+    }
+
+    Matrix &operator-=(const Matrix &other) {
+        if (!this->has_same_dimention(other))
+            throw "can not subtract mismatching dimention matrix";
+        int size = n_row * n_col;
+        for (int i = 0; i < size; ++i)
+            a[i] -= other.a[i];
+        return *this;
+    }
+
+    Matrix operator+(const Matrix &other) {
+        Matrix a(*this);
+        return a += other;
+    }
+
+    Matrix operator-(const Matrix &other) {
+        Matrix a(*this);
+        return a -= other;
+    }
+
     Matrix operator*(const Matrix &other) {}
 
     bool operator==(const Matrix &other) {
@@ -76,6 +109,16 @@ template <class T> class Matrix {
     int n_row, n_col;
 
     int get_index(int i, int j) const { return i * n_col + j; }
+
+    void clear() {
+        n_row = n_col = 0;
+        if (a != nullptr)
+            delete[] a;
+    }
+
+    bool has_same_dimention(const Matrix &other) {
+        return n_row == other.n_row && n_col == other.n_col;
+    }
 };
 
 template <class T> std::ostream &operator<<(std::ostream &sout, const Matrix<T> &m) {
