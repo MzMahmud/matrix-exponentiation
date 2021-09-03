@@ -5,7 +5,7 @@ using namespace std;
 
 int main(int argc, char const *argv[]) {
     cout << "hello world!" << endl;
-    Matrix<int> a(3, 2, -1);
+    Matrix<int> a = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
     cout << a;
     return 0;
 }

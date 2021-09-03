@@ -1,10 +1,25 @@
 #ifndef __MATRIX_HPP__
 #define __MATRIX_HPP__
 
+#include <initializer_list>
 #include <iostream>
+
+using std::initializer_list;
 
 template <class T> class Matrix {
   public:
+    Matrix(initializer_list<initializer_list<T>> list_of_list) {
+        n_row = list_of_list.size();
+        n_col = list_of_list.begin()->size();
+        a     = new T[n_row * n_col];
+        int i = 0;
+        for (const auto &list : list_of_list) {
+            for (const auto &item : list) {
+                a[i++] = item;
+            }
+        }
+    }
+
     Matrix(int n_row, int n_col) {
         this->n_row = n_row;
         this->n_col = n_col;
