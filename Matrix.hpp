@@ -6,11 +6,28 @@
 
 template <class T> class Matrix {
   public:
-    Matrix() {}
-    Matrix(const Matrix &other) {}
-    Matrix(size_t n_row, size_t n_col) {}
-    Matrix(size_t n_row, size_t n_col, const T &initial_value) {}
-    ~Matrix() {}
+    Matrix(size_t n_row, size_t n_col) {
+        this->n_row = n_row;
+        this->n_col = n_col;
+        this->a     = new T[this->n_row * this->n_col];
+    }
+
+    Matrix() : Matrix(2, 2) {}
+
+    Matrix(size_t n_row, size_t n_col, const T &initial_value) : Matrix(n_row, n_col) {
+        for (int i = 0; i < this->n_row * this->n_col; ++i)
+            this->a[i] = initial_value;
+    }
+
+    Matrix(const Matrix &other) : Matrix(other.n_row, other.n_col) {
+        for (int i = 0; i < this->n_row * this->n_col; ++i)
+            this->a[i] = other.a[i];
+    }
+
+    ~Matrix() {
+        if (a != nullptr)
+            delete[] a;
+    }
 
     Matrix &operator=(const Matrix &other) {}
     Matrix &operator+=(const Matrix &other) {}
@@ -31,7 +48,7 @@ template <class T> class Matrix {
         return true;
     }
 
-    T &operator()(size_t i, size_t j) {}
+    T &operator()(size_t i, size_t j) { return a[get_index(i, j)]; }
 
     size_t n_row() const { return n_row; }
     size_t n_col() const { return n_col; }
@@ -39,6 +56,8 @@ template <class T> class Matrix {
   private:
     T *a;
     size_t n_row, n_col;
+
+    size_t get_index(size_t i, size_t j) { return i * n_row + j; }
 };
 
 template <class T> std::ostream &operator<<(std::ostream &sout, const Matrix<T> &m) {
