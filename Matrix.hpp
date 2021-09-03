@@ -57,12 +57,34 @@ template <class T> class Matrix {
         return *this;
     }
 
-    Matrix &operator+=(const Matrix &other) {}
-    Matrix &operator-=(const Matrix &other) {}
-    Matrix &operator*=(const Matrix &other) {}
+    Matrix &operator+=(const Matrix &other) {
+        if (!this->has_same_dimention(other))
+            throw "can not add mismatching dimention matrix";
+        int size = n_row * n_col;
+        for (int i = 0; i < size; ++i)
+            a[i] += other.a[i];
+        return *this;
+    }
 
-    Matrix operator+(const Matrix &other) {}
-    Matrix operator-(const Matrix &other) {}
+    Matrix &operator-=(const Matrix &other) {
+        if (!this->has_same_dimention(other))
+            throw "can not subtract mismatching dimention matrix";
+        int size = n_row * n_col;
+        for (int i = 0; i < size; ++i)
+            a[i] -= other.a[i];
+        return *this;
+    }
+
+    Matrix operator+(const Matrix &other) {
+        Matrix a(*this);
+        return a += other;
+    }
+
+    Matrix operator-(const Matrix &other) {
+        Matrix a(*this);
+        return a -= other;
+    }
+
     Matrix operator*(const Matrix &other) {}
 
     bool operator==(const Matrix &other) {
@@ -92,6 +114,10 @@ template <class T> class Matrix {
         n_row = n_col = 0;
         if (a != nullptr)
             delete[] a;
+    }
+
+    bool has_same_dimention(const Matrix &other) {
+        return n_row == other.n_row && n_col == other.n_col;
     }
 };
 
