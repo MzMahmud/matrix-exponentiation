@@ -47,11 +47,19 @@ template <class T> class Matrix {
 
     Matrix &operator=(const Matrix &other) {
         if (this != &other) {
-            clear();
-            n_row    = other.n_row;
-            n_col    = other.n_col;
-            int size = n_row * n_col;
-            for (int i = 0; i < size; ++i)
+            int this_size = n_row * n_col;
+
+            n_row = other.n_row;
+            n_col = other.n_col;
+
+            int other_size = other.n_row * other.n_col;
+            if (this_size != other_size) {
+                if (a != nullptr)
+                    delete[] a;
+                a = new T[other_size];
+            }
+
+            for (int i = 0; i < other_size; ++i)
                 a[i] = other.a[i];
         }
         return *this;
@@ -76,16 +84,31 @@ template <class T> class Matrix {
     }
 
     Matrix operator+(const Matrix &other) {
-        Matrix a(*this);
-        return a += other;
+        Matrix m(*this);
+        return m += other;
     }
 
     Matrix operator-(const Matrix &other) {
-        Matrix a(*this);
-        return a -= other;
+        Matrix m(*this);
+        return m -= other;
     }
 
-    Matrix operator*(const Matrix &other) {}
+    Matrix operator*(const Matrix &other) {
+        if (n_col != other.n_row)
+            throw "can not multiply for invalid dimention";
+
+        Matrix m(n_row, other.n_col);
+        const Matrix &this_matrix = *this;
+        for (int i = 0; i < m.n_row; ++i) {
+            for (int j = 0; j < m.n_col; ++j) {
+                for (int k = 0; k < n_col; ++k) {
+                    T res = this_matrix(i, k) * other(k, j);
+                    k == 0 ? m(i, j) = res : m(i, j) += res;
+                }
+            }
+        }
+        return m;
+    }
 
     bool operator==(const Matrix &other) {
         if (n_row != other.n_row || n_col != other.n_col)
@@ -109,12 +132,6 @@ template <class T> class Matrix {
     int n_row, n_col;
 
     int get_index(int i, int j) const { return i * n_col + j; }
-
-    void clear() {
-        n_row = n_col = 0;
-        if (a != nullptr)
-            delete[] a;
-    }
 
     bool has_same_dimention(const Matrix &other) {
         return n_row == other.n_row && n_col == other.n_col;
