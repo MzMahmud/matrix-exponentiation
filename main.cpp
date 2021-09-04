@@ -25,6 +25,9 @@ int main(int argc, char const *argv[]) {
         cout << vect;
         cout << "[vect]T\n";
         cout << vect.transpose();
+        cout << "[vect]T[vect]\n";
+
+        cout << vect.transpose() * vect;
 
         cout << "[c]\n";
         cout << c;
