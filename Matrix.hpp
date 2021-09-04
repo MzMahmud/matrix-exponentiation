@@ -8,34 +8,13 @@ using std::initializer_list;
 
 template <class T> class Matrix {
   public:
-    Matrix(initializer_list<T> list) {
-        n_row = list.size();
-        n_col = 1;
+    Matrix() : a(nullptr), n_row(0), n_col(0) {}
+
+    Matrix(int _n_row, int _n_col) {
+        n_row = _n_row;
+        n_col = _n_col;
         a     = new T[n_row * n_col];
-        int i = 0;
-        for (const auto &item : list)
-            a[i++] = item;
     }
-
-    Matrix(initializer_list<initializer_list<T>> list_of_list) {
-        n_row = list_of_list.size();
-        n_col = list_of_list.begin()->size();
-        a     = new T[n_row * n_col];
-        int i = 0;
-        for (const auto &list : list_of_list) {
-            for (const auto &item : list) {
-                a[i++] = item;
-            }
-        }
-    }
-
-    Matrix(int n_row, int n_col) {
-        this->n_row = n_row;
-        this->n_col = n_col;
-        this->a     = new T[this->n_row * this->n_col];
-    }
-
-    Matrix() : Matrix(2, 2) {}
 
     Matrix(int n_row, int n_col, const T &initial_value) : Matrix(n_row, n_col) {
         int size = n_row * n_col;
@@ -47,6 +26,20 @@ template <class T> class Matrix {
         int size = n_row * n_col;
         for (int i = 0; i < size; ++i)
             a[i] = other.a[i];
+    }
+
+    Matrix(const initializer_list<T> &list) : Matrix(list.size(), 1) {
+        int i = 0;
+        for (const auto &item : list)
+            a[i++] = item;
+    }
+
+    Matrix(const initializer_list<initializer_list<T>> &list_of_list)
+        : Matrix(list_of_list.size(), list_of_list.begin()->size()) {
+        int i = 0;
+        for (const auto &list : list_of_list)
+            for (const auto &item : list)
+                a[i++] = item;
     }
 
     ~Matrix() {
@@ -105,7 +98,6 @@ template <class T> class Matrix {
     Matrix operator*(const Matrix &other) {
         if (n_col != other.n_row)
             throw "can not multiply for invalid dimention";
-
         Matrix m(n_row, other.n_col);
         const Matrix &this_matrix = *this;
         for (int i = 0; i < m.n_row; ++i) {
@@ -122,11 +114,9 @@ template <class T> class Matrix {
     Matrix transpose() {
         Matrix m(n_col, n_row);
         const Matrix &this_matrix = *this;
-        for (int i = 0; i < m.n_row; ++i) {
-            for (int j = 0; j < m.n_col; ++j) {
+        for (int i = 0; i < m.n_row; ++i)
+            for (int j = 0; j < m.n_col; ++j)
                 m(i, j) = this_matrix(j, i);
-            }
-        }
         return m;
     }
 
@@ -145,6 +135,7 @@ template <class T> class Matrix {
     const T &operator()(int i, int j) const { return a[get_index(i, j)]; }
 
     int get_n_row() const { return n_row; }
+
     int get_n_col() const { return n_col; }
 
   private:
