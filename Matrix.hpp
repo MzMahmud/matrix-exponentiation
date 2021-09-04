@@ -8,6 +8,15 @@ using std::initializer_list;
 
 template <class T> class Matrix {
   public:
+    Matrix(initializer_list<T> list) {
+        n_row = list.size();
+        n_col = 1;
+        a     = new T[n_row * n_col];
+        int i = 0;
+        for (const auto &item : list)
+            a[i++] = item;
+    }
+
     Matrix(initializer_list<initializer_list<T>> list_of_list) {
         n_row = list_of_list.size();
         n_col = list_of_list.begin()->size();
@@ -105,6 +114,17 @@ template <class T> class Matrix {
                     T res = this_matrix(i, k) * other(k, j);
                     k == 0 ? m(i, j) = res : m(i, j) += res;
                 }
+            }
+        }
+        return m;
+    }
+
+    Matrix transpose() {
+        Matrix m(n_col, n_row);
+        const Matrix &this_matrix = *this;
+        for (int i = 0; i < m.n_row; ++i) {
+            for (int j = 0; j < m.n_col; ++j) {
+                m(i, j) = this_matrix(j, i);
             }
         }
         return m;
